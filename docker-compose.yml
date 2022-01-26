@@ -1,0 +1,49 @@
+version: '3.1'
+
+services:
+  back:
+    build:
+      context: ./back
+      args:
+        UserId: 1000
+        Username: www
+    volumes:
+      - ./back/config/php.ini
+      - ./back/src:/var/www
+    user:
+      www
+    networks:
+      - laravel-lesson
+
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx/config/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - laravel-lesson
+    ports:
+      - "80:80"
+
+  db:
+    image: mariadb
+    volumes:
+      - ./db/data:/var/lib/mysql
+    environment:
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: dbpassword
+      MYSQL_DATABASE: database
+      MYSQL_ROOT_PASSWORD: toor
+    networks:
+      - laravel-lesson
+
+  adminer:
+    image: adminer
+    networks:
+      - laravel-lesson
+    ports:
+      - "8080:8080"
+
+networks:
+  laravel-lesson:
+    driver: bridge
+  
